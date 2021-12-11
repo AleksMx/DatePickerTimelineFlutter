@@ -60,11 +60,15 @@ class DatePicker extends StatefulWidget {
   /// Locale for the calendar default: en_us
   final String locale;
 
+  ///
+  final double paddingInScrollView;
+
   DatePicker(
     this.startDate, {
     Key? key,
     this.width = 60,
     this.height = 80,
+    this.paddingInScrollView = 0,
     this.controller,
     this.monthTextStyle = defaultMonthTextStyle,
     this.dayTextStyle = defaultDayTextStyle,
@@ -172,40 +176,46 @@ class _DatePickerState extends State<DatePicker> {
           bool isSelected =
               _currentDate != null ? _compareDate(date, _currentDate!) : false;
 
-          // Return the Date Widget
-          return DateWidget(
-            date: date,
-            monthTextStyle: isDeactivated
-                ? deactivatedMonthStyle
-                : isSelected
-                    ? selectedMonthStyle
-                    : widget.monthTextStyle,
-            dateTextStyle: isDeactivated
-                ? deactivatedDateStyle
-                : isSelected
-                    ? selectedDateStyle
-                    : widget.dateTextStyle,
-            dayTextStyle: isDeactivated
-                ? deactivatedDayStyle
-                : isSelected
-                    ? selectedDayStyle
-                    : widget.dayTextStyle,
-            width: widget.width,
-            locale: widget.locale,
-            selectionColor:
-                isSelected ? widget.selectionColor : Colors.transparent,
-            onDateSelected: (selectedDate) {
-              // Don't notify listener if date is deactivated
-              if (isDeactivated) return;
+          bool isFirst = (index == 0);
+          bool isLast = (widget.daysCount == index - 1);
 
-              // A date is selected
-              if (widget.onDateChange != null) {
-                widget.onDateChange!(selectedDate);
-              }
-              setState(() {
-                _currentDate = selectedDate;
-              });
-            },
+          // Return the Date Widget
+          return Container(
+            margin: EdgeInsets.only(left: isFirst?widget.paddingInScrollView:0, right: isLast?widget.paddingInScrollView:0),
+            child: DateWidget(
+              date: date,
+              monthTextStyle: isDeactivated
+                  ? deactivatedMonthStyle
+                  : isSelected
+                  ? selectedMonthStyle
+                  : widget.monthTextStyle,
+              dateTextStyle: isDeactivated
+                  ? deactivatedDateStyle
+                  : isSelected
+                  ? selectedDateStyle
+                  : widget.dateTextStyle,
+              dayTextStyle: isDeactivated
+                  ? deactivatedDayStyle
+                  : isSelected
+                  ? selectedDayStyle
+                  : widget.dayTextStyle,
+              width: widget.width,
+              locale: widget.locale,
+              selectionColor:
+              isSelected ? widget.selectionColor : Colors.transparent,
+              onDateSelected: (selectedDate) {
+                // Don't notify listener if date is deactivated
+                if (isDeactivated) return;
+
+                // A date is selected
+                if (widget.onDateChange != null) {
+                  widget.onDateChange!(selectedDate);
+                }
+                setState(() {
+                  _currentDate = selectedDate;
+                });
+              },
+            ),
           );
         },
       ),
